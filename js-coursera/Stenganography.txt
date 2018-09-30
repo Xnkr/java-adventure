@@ -1,0 +1,74 @@
+var front = new SimpleImage("smalllion.jpg");
+var back = new SimpleImage("smallpanda.png");
+
+function cropimg(image,width,height){
+    var cropped = new SimpleImage(width,height);
+    for( var px of image.values()){
+        var x = px.getX();
+        var y = px.getY();
+        if(x<width && y<height){
+            cropped.setPixel(x,y,px);
+        }
+    }
+    return cropped;
+}
+
+function clearbits(px){
+    px = Math.floor(px /16) * 16;
+    return px;
+}
+
+function prehide(image){
+    for ( var px of image.values()){
+        px.setRed(clearbits(px.getRed()));
+        px.setGreen(clearbits(px.getGreen()));
+        px.setBlue(clearbits(px.getBlue()));
+    }
+    return image;
+}
+
+function prepmsg(image){
+    for(var px of image.values()){
+        px.setRed(Math.floor(px.getRed()/16));
+        px.setGreen(Math.floor(px.getGreen()/16));
+        px.setBlue(Math.floor(px.getBlue()/16));
+    }
+    return image;
+}
+
+function combine(front,back){
+    var final = new SimpleImage(front.getWidth(),front.getHeight());
+    for(var px of final.values()){
+        var x = px.getX();
+        var y = px.getY();
+        var showpx = front.getPixel(x,y);
+        var hidepx = back.getPixel(x,y);
+        px.setRed(showpx.getRed()+hidepx.getRed());
+        px.setGreen(showpx.getGreen()+hidepx.getGreen());
+        px.setBlue(showpx.getBlue()+hidepx.getBlue());
+    }
+    return final;
+}
+
+front = cropimg(front,200,180);
+back = cropimg(back,200,180);
+front = prehide(front);
+back = prepmsg(back);
+var finish = combine(front,back);
+print(finish);
+
+function extract(final){
+    var hidden = new SimpleImage(final.getWidth(),final.getHeight());
+    for( var px of hidden.values()){
+        var x = px.getX();
+        var y = px.getY();
+        var extpx = final.getPixel(x,y);
+        px.setRed((extpx.getRed()%16)*16);
+        px.setGreen((extpx.getGreen()%16)*16);
+        px.setBlue((extpx.getBlue()%16)*16);
+    }
+    return hidden;
+}
+
+var hidden = extract(finish);
+print(hidden);

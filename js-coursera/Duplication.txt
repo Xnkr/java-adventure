@@ -1,0 +1,19 @@
+var old = new SimpleImage("smallpanda.png");
+var nw = new SimpleImage(old.getWidth()*2,old.getHeight()*2);
+
+for(var px of nw.values()){
+    var x = px.getX();
+    var y = px.getY();
+    var Nx = nw.getWidth()-1;
+    var Ny = nw.getHeight()-1;
+    if(x > Nx/2)
+        x = x-1-Math.floor(Nx/2);
+    if(y > Ny/2)
+        y = y-1-Math.floor(Ny/2);
+    var Inpixel = old.getPixel(x,y);
+    px.setRed(Inpixel.getRed());
+    px.setGreen(Inpixel.getGreen());
+    px.setBlue(Inpixel.getBlue());
+}
+
+print(nw);

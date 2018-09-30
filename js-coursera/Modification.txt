@@ -1,0 +1,65 @@
+function setBorder(pixel,image){
+    var x = pixel.getX();
+    var y = pixel.getY();
+    if (x < 4 || y < 4 || x >= image.getWidth() - 4 || y >= image.getHeight() - 4)
+    px = setPixelBlack(pixel);
+    return pixel;
+}
+
+function dist(pixel,x,y){
+    var dx = pixel.getX() - x;
+    var dy = pixel.getY() - y;
+    return(Math.sqrt(dx*dx+dy*dy));
+}
+
+function setPixelWhite(pixel){
+    pixel.setBlue(255);
+    pixel.setGreen(255);
+    pixel.setRed(255);
+    return pixel;
+}
+
+function setPixelBlack(pixel){
+    pixel.setRed(0);
+    pixel.setGreen(0);
+    pixel.setBlue(0);
+    return pixel;
+}
+
+function pixelOnCorner(image, x, y){
+    if(x+y<50 || image.getWidth()-x+y<50 || x+image.getHeight()-y<50 || image.getWidth()-x+image.getHeight()-y<50) return true;
+    return false;
+}
+
+var image = new SimpleImage("skyline.jpg");
+var out = new SimpleImage(image.getWidth(),image.getHeight());
+
+for(var px of image.values()){
+    var x = px.getX();
+    var y = px.getY();
+    var outpx = out.getPixel(x,y);
+    //Check whether Pixel is in any one of the corners
+    if(pixelOnCorner(image,x,y)){
+        //Set pixel white
+        outpx = setPixelWhite(outpx);
+    }
+    //Check for the sun position
+    else if(dist(px,200,50)<25){
+        //Set sun position yellow
+        outpx.setRed(255-2*dist(px,200,50));
+        outpx.setGreen(255-2*dist(px,200,50));
+    }
+    //Make random pixel white for snowfall
+    else if(Math.random()>0.99){
+        outpx=setPixelWhite(outpx);
+    }
+    //Set other pixels to original image
+    else{
+        out.setPixel(x,y,px);
+    }
+    //Create Border
+    outpx = setBorder(outpx,out);
+}
+//Print Images
+print(image);
+print(out);
